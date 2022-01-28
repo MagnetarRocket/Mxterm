@@ -1,0 +1,3 @@
+?package(mxterm):needs="x11" section="XShells"      \
+   longtitle="MXterm: Motif terminal emulator for X"            title="MXterm"\
+   command="mxterm"
