@@ -1,0 +1,1 @@
+shlibs:Depends=libc6 (>= 2.3.2.ds1-4), libice6 | xlibs (>> 4.1.0), libmotif3, libncurses5 (>= 5.4-1), libsm6 | xlibs (>> 4.1.0), libx11-6 | xlibs (>> 4.1.0), libxaw7 (>> 4.1.0), libxext6 | xlibs (>> 4.1.0), libxmu6 | xlibs (>> 4.1.0), libxp6 | xlibs (>> 4.1.0), libxpm4 | xlibs (>> 4.1.0), libxt6 | xlibs (>> 4.1.0)

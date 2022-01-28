@@ -1,0 +1,7 @@
+#!/bin/sh -e
+
+if [ "$1" = remove ]; then
+    update-alternatives --remove x-terminal-emulator /usr/bin/mxterm
+    pkg=mxterm
+    if [ -L /usr/doc/$pkg ]; then rm -f /usr/doc/$pkg; fi
+fi

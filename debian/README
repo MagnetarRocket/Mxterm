@@ -1,0 +1,61 @@
+--------------------------------------------------------------------------------
+
+                      new changes applied by ali akcaagac.
+                           starting with 02-Jul-2000.
+                                  reach me at
+                     ali.akcaagac@stud.fh-wilhelmshaven.de
+
+--------------------------------------------------------------------------------
+
+hello!
+
+my name is ali akcaagac. i'm a student of computer & economics science here
+in germany. now that we all can get the fine openmotif, most people also
+requested a new mxterm, that never was updated since 1993. the only mxterm
+that i know of was from metrolink. unfortunately you have to buy it with
+their metrolink motif. i don't realy know if you can get it for free.
+
+i layed my hands on the old patches from 1993. modified them and applied them
+to the current version of xterm. yes now you can expect new mxterm versions
+every time another xterm comes out. only by patching the original code with
+the old bugfixed and modified patches. please keep in mind that i took some
+hours getting all these stuff working. the xterm package really sucks. never
+seen such a hack ;).
+
+at least mxterm works fine for me. i don't know if this will do at your
+machine aswell. just try it out. a last hint. this was xterm that comes with
+the xfree86 v4.0 archive. i haven't checked it with an standalone version.
+just get xf4.x and apply the patches yourself and or compile this archive.
+
+here some compile and install guide.
+
+1) depack the archive and make sure you got openmotif
+2) enter the mxterm directory and enter "./configure --prefix=/usr/X11R6"
+   please don't use the "--enable-toolbar" option, this cause trouble with
+   motif. you don't need to enable anything more. mxterm will be made directly
+   out of the box. the other options in "./configure" should work aswell and
+   won't harm mxterm (but not the --enable-toolbar option).
+3) run "make"
+4) it might be (for non linux users) that compiling will abort in link
+   sequence, it might tell you for unresolved links or such garbage, this
+   might be that your machine use a different way linking the motif libraries
+   if this happens, then please edit "Makefile.in" search for "-lXm -lXp" and
+   replace them with all kind of libaries that your machine need to compile
+   other motif applications and then go to step 2) again.
+5) "make install" installs mxterm to your X11R6 directory.
+
+btw: there's a scrollbarbug in the original xterm, that also occour in mxterm.
+     i want to tell you about, so it's not my fault at all. when you have your
+     scrollbar placed at the right side and turn scrollbar on/off with the
+     menu, the scrollbar get displaced. tell the programmers of xterm to fix
+     that. resizing the window will fix that problem again.
+
+--------------------------------------------------------------------------------
+
+changes:
+
+04-07-2000:	- cleaned up the patch to be even simpler
+		- added indicatorsize for togglebutton
+03-07-2000:	- initial release
+
+--------------------------------------------------------------------------------
