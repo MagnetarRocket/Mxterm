@@ -1,0 +1,581 @@
+--- xterm/Makefile.in	Tue Jul  4 03:56:29 2000
++++ mxterm/Makefile.in	Tue Jul  4 03:56:28 2000
+@@ -20,9 +20,9 @@
+ EXTRA_CFLAGS	= @EXTRA_CFLAGS@
+ EXTRA_LOADFLAGS	= @IMAKE_LOADFLAGS@
+ 
+-CPPFLAGS	= -I. -I$(srcdir) -DHAVE_CONFIG_H $(X_CFLAGS) $(IMAKE_CFLAGS)
++CPPFLAGS	= -I. -I$(srcdir) -DMOTIF -DHAVE_CONFIG_H $(X_CFLAGS) $(IMAKE_CFLAGS)
+ CFLAGS		= @CFLAGS@ $(EXTRA_CFLAGS)
+-LIBS		= @LIBS@
++LIBS		= -lXm -lXp @LIBS@
+ 
+ prefix		= @prefix@
+ exec_prefix	= @exec_prefix@
+@@ -69,7 +69,7 @@
+            OBJS = $(OBJS1) $(OBJS2)
+            HDRS = VTparse.h data.h error.h main.h menu.h proto.h \
+                   ptyx.h version.h xterm.h $(EXTRAHDR)
+-       PROGRAMS = xterm resize
++       PROGRAMS = mxterm resize
+ 
+ all:	$(PROGRAMS)
+ 
+@@ -90,7 +90,7 @@
+ 
+ $(OBJS1) : ptyx.h xtermcfg.h
+ 
+-xterm : $(OBJS1)
++mxterm : $(OBJS1)
+ 	@ECHO_LD@$(LINK) $(LDFLAGS) -o $@ $(OBJS1) $(X_LIBS) $(X_EXTRA_LIBS) $(LIBS) $(EXTRA_LOADFLAGS)
+ 
+ resize : $(OBJS2)
+@@ -107,13 +107,13 @@
+ charproc.o : @CHARPROC_DEPS@
+ 
+ install-full \
+-install :: $(INSTALL_DIRS) xterm resize
+-	$(srcdir)/sinstall.sh "$(INSTALL_PROGRAM)" xterm  @XTERM_PATH@ $(BINDIR)/xterm
++install :: $(INSTALL_DIRS) mxterm resize
++	$(srcdir)/sinstall.sh "$(INSTALL_PROGRAM)" mxterm  @XTERM_PATH@ $(BINDIR)/mxterm
+ 	$(INSTALL_PROGRAM) -s -m  755 resize $(BINDIR)/resize
+-	$(INSTALL_DATA) $(srcdir)/xterm.man    $(MANDIR)/xterm.$(manext)
++	$(INSTALL_DATA) $(srcdir)/mxterm.man    $(MANDIR)/mxterm.$(manext)
+ 	$(INSTALL_DATA) $(srcdir)/resize.man   $(MANDIR)/resize.$(manext)
+-	$(INSTALL_DATA) $(srcdir)/XTerm.ad     $(APPSDIR)/XTerm
+-	$(INSTALL_DATA) $(srcdir)/XTerm-col.ad $(APPSDIR)/XTerm-color
++	$(INSTALL_DATA) $(srcdir)/MXTerm.ad     $(APPSDIR)/MXTerm
++	$(INSTALL_DATA) $(srcdir)/MXTerm-col.ad $(APPSDIR)/MXTerm-color
+ 	@echo 'Completed installation of executables and documentation.'
+ install ::
+ 	@echo 'Use "make install-ti" to install terminfo description.'
+@@ -133,12 +133,12 @@
+ installdirs: $(INSTALL_DIRS)
+ 
+ uninstall:
+-	-$(RM) $(BINDIR)/xterm
++	-$(RM) $(BINDIR)/mxterm
+ 	-$(RM) $(BINDIR)/resize
+-	-$(RM) $(MANDIR)/xterm.$(manext)
+-	-$(RM) $(MANDIR)/resize.$(manext)
+-	-$(RM) $(APPSDIR)/XTerm
+-	-$(RM) $(APPSDIR)/XTerm-color
++	-$(RM) $(MANDIR)/mxterm.$(manext)
++	-$(RM) $(MANDIR)/mresize.$(manext)
++	-$(RM) $(APPSDIR)/MXTerm
++	-$(RM) $(APPSDIR)/MXTerm-color
+ 
+ mostlyclean:
+ 	-$(RM) *.[ois] XtermLog.* .pure core *~ *.bak *.BAK *.out
+--- xterm/main.c	Tue Jul  4 03:56:29 2000
++++ mxterm/main.c	Tue Jul  4 03:56:28 2000
+@@ -856,6 +856,17 @@
+ };
+ #undef offset
+ 
++#ifdef MOTIF
++static char *fallback_resources[] = {
++    "MXTerm*mainMenu.labelString:  Main Options (no app-defaults)",
++    "MXTerm*vtMenu.labelString:  VT Options (no app-defaults)",
++    "MXTerm*fontMenu.labelString:  VT Fonts (no app-defaults)",
++#if OPT_TEK4014
++    "MXTerm*tekMenu.labelString:  Tek Options (no app-defaults)",
++#endif
++    NULL
++};
++#else
+ static char *fallback_resources[] = {
+     "XTerm*SimpleMenu*menuLabel.vertSpace: 100",
+     "XTerm*SimpleMenu*HorizontalMargins: 16",
+@@ -869,6 +880,7 @@
+ #endif
+     NULL
+ };
++#endif /* MOTIF */
+ 
+ /* Command line options table.  Only resources are entered here...there is a
+    pass over the remaining options after XrmParseCommand is let loose. */
+@@ -1586,11 +1598,19 @@
+ #endif
+ 
+ 	    XtSetErrorHandler(xt_error);
+-	    toplevel = XtAppInitialize (&app_con, "XTerm",
++#ifdef MOTIF
++    toplevel = XtAppInitialize (&app_con, "MXTerm",
++					optionDescList,
++					XtNumber(optionDescList),
++					&argc, argv, fallback_resources,
++					NULL, 0);
++#else
++    toplevel = XtAppInitialize (&app_con, "XTerm",
+ 					optionDescList,
+ 					XtNumber(optionDescList),
+ 					&argc, argv, fallback_resources,
+ 					NULL, 0);
++#endif /* MOTIF */
+ 	    XtSetErrorHandler((XtErrorHandler)0);
+ 
+ 	    XtGetApplicationResources(toplevel, (XtPointer) &resource,
+--- xterm/menu.c	Tue Jul  4 03:56:29 2000
++++ mxterm/menu.c	Tue Jul  4 03:56:28 2000
+@@ -58,10 +58,20 @@
+ #include <X11/Shell.h>
+ #include <X11/Xmu/CharSet.h>
+ 
++#ifdef MOTIF
++#include <Xm/Xm.h>
++#include <Xm/RowColumn.h>
++#include <Xm/MenuShell.h>
++#include <Xm/ToggleBG.h>
++#include <Xm/PushBG.h>
++#include <Xm/LabelG.h>
++#include <Xm/SeparatoG.h>
++#else
+ #include <X11/Xaw/SimpleMenu.h>
+ #include <X11/Xaw/Box.h>
+ #include <X11/Xaw/SmeBSB.h>
+ #include <X11/Xaw/SmeLine.h>
++#endif /* MOTIF */
+ 
+ #if OPT_TOOLBAR
+ #include <X11/Xaw/MenuButton.h>
+@@ -177,6 +187,121 @@
+ /*
+  * The order of entries MUST match the values given in menu.h
+  */
++#ifdef MOTIF
++MenuEntry mainMenuEntries[] = {
++    { "securekbd",	do_securekbd,	NULL, TOGGLEBUTTON },
++    { "allowsends",	do_allowsends,	NULL, TOGGLEBUTTON },
++#ifdef ALLOWLOGGING
++    { "logging",	do_logging,	NULL, TOGGLEBUTTON },
++#endif
++    { "print",		do_print,	NULL, PUSHBUTTON },
++    { "redraw",		do_redraw,	NULL, PUSHBUTTON },
++    { "line1",		NULL,		NULL, SEPARATORLINE },
++    { "8-bit control",	do_8bit_control, NULL, TOGGLEBUTTON },
++    { "backarrow key",	do_backarrow,	NULL, TOGGLEBUTTON },
++#if OPT_NUM_LOCK
++    { "num-lock",	do_num_lock,	NULL, TOGGLEBUTTON },
++    { "meta-esc",	do_meta_esc,	NULL, TOGGLEBUTTON },
++#endif
++    { "delete-is-del",	do_delete_del,	NULL, TOGGLEBUTTON },
++    { "old function-keys",do_old_fkeys,	NULL, TOGGLEBUTTON },
++#if OPT_HP_FUNC_KEYS
++    { "hp function-keys",do_hp_fkeys,	NULL, TOGGLEBUTTON },
++#endif
++#if OPT_SCO_FUNC_KEYS
++    { "sco function-keys",do_sco_fkeys,	NULL, TOGGLEBUTTON },
++#endif
++    { "sun function-keys",do_sun_fkeys,	NULL, TOGGLEBUTTON },
++#if OPT_SUNPC_KBD
++    { "sun keyboard",	do_sun_kbd,	NULL, TOGGLEBUTTON },
++#endif
++    { "line2",		NULL,		NULL, SEPARATORLINE },
++    { "suspend",	do_suspend,	NULL, PUSHBUTTON },
++    { "continue",	do_continue,	NULL, PUSHBUTTON },
++    { "interrupt",	do_interrupt,	NULL, PUSHBUTTON },
++    { "hangup",		do_hangup,	NULL, PUSHBUTTON },
++    { "terminate",	do_terminate,	NULL, PUSHBUTTON },
++    { "kill",		do_kill,	NULL, PUSHBUTTON },
++    { "line3",		NULL,		NULL, SEPARATORLINE },
++    { "quit",		do_quit,	NULL, PUSHBUTTON }};
++
++MenuEntry vtMenuEntries[] = {
++    { "scrollbar",	do_scrollbar,	NULL, TOGGLEBUTTON },
++    { "jumpscroll",	do_jumpscroll,	NULL, TOGGLEBUTTON },
++    { "reversevideo",	do_reversevideo, NULL, TOGGLEBUTTON },
++    { "autowrap",	do_autowrap,	NULL, TOGGLEBUTTON },
++    { "reversewrap",	do_reversewrap, NULL, TOGGLEBUTTON },
++    { "autolinefeed",	do_autolinefeed, NULL, TOGGLEBUTTON },
++    { "appcursor",	do_appcursor,	NULL, TOGGLEBUTTON },
++    { "appkeypad",	do_appkeypad,	NULL, TOGGLEBUTTON },
++    { "scrollkey",	do_scrollkey,	NULL, TOGGLEBUTTON },
++    { "scrollttyoutput",do_scrollttyoutput, NULL, TOGGLEBUTTON },
++    { "allow132",	do_allow132,	NULL, TOGGLEBUTTON },
++    { "cursesemul",	do_cursesemul,	NULL, TOGGLEBUTTON },
++    { "visualbell",	do_visualbell,	NULL, TOGGLEBUTTON },
++    { "marginbell",	do_marginbell,	NULL, TOGGLEBUTTON },
++#if OPT_BLINK_CURS
++    { "cursorblink",	do_cursorblink,	NULL, TOGGLEBUTTON },
++#endif
++    { "titeInhibit",	do_titeInhibit,	NULL, TOGGLEBUTTON },
++#ifndef NO_ACTIVE_ICON
++    { "activeicon",	do_activeicon,	NULL, TOGGLEBUTTON },
++#endif /* NO_ACTIVE_ICON */
++    { "line1",		NULL,		NULL, SEPARATORLINE },
++    { "softreset",	do_softreset,	NULL, PUSHBUTTON },
++    { "hardreset",	do_hardreset,	NULL, PUSHBUTTON },
++    { "clearsavedlines",do_clearsavedlines, NULL, PUSHBUTTON },
++    { "line2",		NULL,		NULL, SEPARATORLINE },
++#if OPT_TEK4014
++    { "tekshow",	do_tekshow,	NULL, TOGGLEBUTTON },
++    { "tekmode",	do_tekmode,	NULL, TOGGLEBUTTON },
++    { "vthide",		do_vthide,	NULL, TOGGLEBUTTON },
++#endif
++    { "altscreen",	do_altscreen,	NULL, TOGGLEBUTTON },
++    };
++
++MenuEntry fontMenuEntries[] = {
++    { "fontdefault",	do_vtfont,	NULL, TOGGLEBUTTON },
++    { "font1",		do_vtfont,	NULL, TOGGLEBUTTON },
++    { "font2",		do_vtfont,	NULL, TOGGLEBUTTON },
++    { "font3",		do_vtfont,	NULL, TOGGLEBUTTON },
++    { "font4",		do_vtfont,	NULL, TOGGLEBUTTON },
++    { "font5",		do_vtfont,	NULL, TOGGLEBUTTON },
++    { "font6",		do_vtfont,	NULL, TOGGLEBUTTON },
++    /* this is after the last builtin font; the other entries are special */
++    { "fontescape",	do_vtfont,	NULL, TOGGLEBUTTON },
++    { "fontsel",	do_vtfont,	NULL, TOGGLEBUTTON },
++    /* down to here should match NMENUFONTS in ptyx.h */
++#if OPT_DEC_CHRSET || OPT_BOX_CHARS || OPT_DEC_SOFTFONT
++    { "line1",		NULL,		NULL, SEPARATORLINE },
++#if OPT_BOX_CHARS
++    { "font-linedrawing",do_font_boxchars,NULL, TOGGLEBUTTON },
++#endif
++#if OPT_DEC_CHRSET
++    { "font-doublesize",do_font_doublesize,NULL, TOGGLEBUTTON },
++#endif
++#if OPT_DEC_SOFTFONT
++    { "font-loadable",	do_font_loadable,NULL, TOGGLEBUTTON },
++#endif
++#endif /* toggles for font extensions */
++    };
++
++#if OPT_TEK4014
++MenuEntry tekMenuEntries[] = {
++    { "tektextlarge",	do_tektextlarge, NULL, TOGGLEBUTTON },
++    { "tektext2",	do_tektext2,	NULL, TOGGLEBUTTON },
++    { "tektext3",	do_tektext3,	NULL, TOGGLEBUTTON },
++    { "tektextsmall",	do_tektextsmall, NULL, TOGGLEBUTTON },
++    { "line1",		NULL,		NULL, SEPARATORLINE },
++    { "tekpage",	do_tekpage,	NULL, PUSHBUTTON },
++    { "tekreset",	do_tekreset,	NULL, PUSHBUTTON },
++    { "tekcopy",	do_tekcopy,	NULL, PUSHBUTTON },
++    { "line2",		NULL,		NULL, SEPARATORLINE },
++    { "vtshow",		do_vtshow,	NULL, TOGGLEBUTTON },
++    { "vtmode",		do_vtmode,	NULL, TOGGLEBUTTON },
++    { "tekhide",	do_tekhide,	NULL, TOGGLEBUTTON }};
++#endif
++#else
+ MenuEntry mainMenuEntries[] = {
+     { "securekbd",	do_securekbd,	NULL },
+     { "allowsends",	do_allowsends,	NULL },
+@@ -290,6 +415,7 @@
+     { "vtmode",		do_vtmode,	NULL },
+     { "tekhide",	do_tekhide,	NULL }};
+ #endif
++#endif /* MOTIF */
+ 
+ typedef struct {
+     char *internal_name;
+@@ -365,6 +491,9 @@
+ static Widget
+ create_menu (Widget w, XtermWidget xtw, MenuIndex num)
+ {
++#ifdef MOTIF
++    Widget v;
++#endif /* MOTIF */
+     static XtCallbackRec cb[2] = { { NULL, NULL }, { NULL, NULL }};
+     static Arg arg = { XtNcallback, (XtArgVal) cb };
+ 
+@@ -375,6 +504,16 @@
+     struct _MenuEntry *entries = data->entry_list;
+     int nentries = data->entry_len;
+ 
++#ifdef MOTIF
++    v = XtCreatePopupShell("shell", transientShellWidgetClass, toplevel, NULL, 0);
++    m = XmCreatePopupMenu(v, data->internal_name, NULL, 0);
++
++    /* create the title label and separator */
++    XtCreateManagedWidget(data->internal_name, xmLabelGadgetClass, m, NULL, 0);
++    XtCreateManagedWidget("separator", xmSeparatorGadgetClass, m, NULL, 0);
++
++    list->w = m;
++#else
+     if (screen->menu_item_bitmap == None) {
+ 	/*
+ 	 * we really want to do these dynamically
+@@ -401,17 +540,37 @@
+     m = XtCreatePopupShell (data->internal_name, simpleMenuWidgetClass, toplevel, NULL, 0);
+     list->w = m;
+ #endif
++#endif /* MOTIF */
+     list->entries = nentries;
+ 
+     for (; nentries > 0; nentries--, entries++) {
+ 	cb[0].callback = (XtCallbackProc) entries->function;
+ 	cb[0].closure = (caddr_t) entries->name;
++#ifdef MOTIF
++	if (entries->type == TOGGLEBUTTON) {
++		entries->widget = XtCreateManagedWidget (entries->name, xmToggleButtonGadgetClass, m, NULL, 0);
++		XtVaSetValues(entries->widget, XmNindicatorSize, 15, NULL);
++		XtAddCallback(entries->widget, XmNvalueChangedCallback, entries->function, (XtPointer)entries->name);
++	}
++	else if (entries->type == PUSHBUTTON) {
++		entries->widget = XtCreateManagedWidget (entries->name, xmPushButtonGadgetClass, m, NULL, 0);
++		XtAddCallback(entries->widget, XmNactivateCallback, entries->function, (XtPointer)entries->name);
++	}
++	else if (entries->type == SEPARATORLINE) {
++		entries->widget = XtCreateManagedWidget (entries->name, xmSeparatorGadgetClass, m, NULL, 0);
++	}
++	else {
++		entries->widget = XtCreateManagedWidget (entries->name, xmSeparatorGadgetClass, m, NULL, 0);
++	}
++    }
++#else
+ 	entries->widget = XtCreateManagedWidget (entries->name,
+ 						 (entries->function ?
+ 						  smeBSBObjectClass :
+ 						  smeLineObjectClass), m,
+ 						 &arg, (Cardinal) 1);
+     }
++#endif /* MOTIF */
+ 
+     /* do not realize at this point */
+     return m;
+@@ -597,11 +756,25 @@
+ 	Cardinal *param_count)      /* 0 or 1 */
+ {
+     if (domenu (w, event, params, param_count)) {
++#ifdef MOTIF
++	int me;
++	Widget mw;
++
++	if ((me = indexOfMenu(params[0])) < 0) {
++		Bell(XkbBI_MinorError, 0);
++	}
++
++	if ((mw = obtain_menu(w, me)) != 0) {
++		XmMenuPosition(mw, (XButtonReleasedEvent *) event);
++		XtManageChild(mw);
++	}
++#else
+ #if OPT_TOOLBAR
+ 	w = select_menu(w, mainMenu)->w;
+ #endif
+ 	XtCallActionProc (w, "XawPositionSimpleMenu", event, params, 1);
+ 	XtCallActionProc (w, "MenuPopup", event, params, 1);
++#endif /* MOTIF */
+     }
+ }
+ 
+@@ -1955,12 +2128,21 @@
+ void
+ UpdateMenuItem(Widget mi, XtArgVal val)
+ {
++#ifdef MOTIF
++	static Arg menuArgs = { XmNset, (XtArgVal) False };
++#else
+ 	static Arg menuArgs = { XtNleftBitmap, (XtArgVal) 0 };
++#endif /* MOTIF */
+ 
+ 	if (mi) {
+ 		menuArgs.value = (XtArgVal) ((val)
++#ifdef MOTIF
++				? True
++				: False);
++#else
+ 				? term->screen.menu_item_bitmap
+ 				: None);
++#endif /* MOTIF */
+ 		XtSetValues (mi, &menuArgs, (Cardinal) 1);
+ 	}
+ }
+@@ -1968,7 +2150,11 @@
+ void
+ SetItemSensitivity(Widget mi, XtArgVal val)
+ {
++#ifdef MOTIF
++	static Arg menuArgs = { XmNsensitive, (XtArgVal) False };
++#else
+ 	static Arg menuArgs = { XtNsensitive, (XtArgVal) 0 };
++#endif /* MOTIF */
+ 
+ 	if (mi) {
+ 		menuArgs.value = (XtArgVal) (val);
+@@ -2064,7 +2250,9 @@
+ 	TRACE(("SetupMenus(%s)\n", shell == toplevel ? "vt100" : "tek4014"));
+ 
+ 	if (shell == toplevel) {
++#ifndef MOTIF
+ 	    XawSimpleMenuAddGlobalActions (app_con);
++#endif /* MOTIF */
+ 	    XtRegisterGrabAction (HandlePopupMenu, True,
+ 				  (ButtonPressMask|ButtonReleaseMask),
+ 				  GrabModeAsync, GrabModeAsync);
+--- xterm/menu.h	Tue Jul  4 03:56:29 2000
++++ mxterm/menu.h	Tue Jul  4 03:56:28 2000
+@@ -62,10 +62,19 @@
+ #include <X11/Intrinsic.h>
+ #include <proto.h>
+ 
++#ifdef MOTIF
++#define TOGGLEBUTTON	1
++#define PUSHBUTTON	2
++#define SEPARATORLINE	3
++#endif /* MOTIF */
++
+ typedef struct _MenuEntry {
+     char *name;
+     void (*function) PROTO_XT_CALLBACK_ARGS;
+     Widget widget;
++#ifdef MOTIF
++    unsigned char type;
++#endif /* MOTIF */
+ } MenuEntry;
+ 
+ extern MenuEntry mainMenuEntries[], vtMenuEntries[];
+--- xterm/scrollbar.c	Tue Jul  4 03:56:29 2000
++++ mxterm/scrollbar.c	Tue Jul  4 03:56:28 2000
+@@ -61,7 +61,12 @@
+ #include <X11/StringDefs.h>
+ #include <X11/Shell.h>
+ 
++#ifdef MOTIF
++#include <X11/cursorfont.h>
++#include <Xm/ScrollBar.h>
++#else
+ #include <X11/Xaw/Scrollbar.h>
++#endif /* MOTIF */
+ 
+ #include <data.h>
+ #include <error.h>
+@@ -70,7 +75,11 @@
+ 
+ /* Event handlers */
+ 
++#ifdef MOTIF
++static void ScrollTextTo ();
++#else
+ static void ScrollTextTo PROTO_XT_CALLBACK_ARGS;
++#endif /* MOTIF */
+ static void ScrollTextUpDownBy PROTO_XT_CALLBACK_ARGS;
+ 
+ 
+@@ -219,6 +228,26 @@
+ {
+ 	Widget scrollWidget;
+ 
++#ifdef MOTIF
++	static Arg argList[] = {
++	   {XmNx,		(XtArgVal) 0},
++	   {XmNy,		(XtArgVal) 0},
++	   {XmNheight,		(XtArgVal) 0},
++	   /* motif widget doesn't have reverse video garbage */
++	   {XmNorientation,	(XtArgVal) XmVERTICAL},
++	   {XmNsliderMark,	(XtArgVal) XmTHUMB_MARK},
++	   {XmNborderWidth,	(XtArgVal) 1},
++	};
++
++	argList[0].value = (XtArgVal) x;
++	argList[1].value = (XtArgVal) y;
++	argList[2].value = (XtArgVal) height;
++
++	scrollWidget = XtCreateWidget("scrollbar", xmScrollBarWidgetClass,
++	  (Widget)xw, argList, XtNumber(argList));
++	XtAddCallback (scrollWidget, XmNvalueChangedCallback, ScrollTextTo, 0);
++	XtAddCallback (scrollWidget, XmNdragCallback, ScrollTextTo, 0);
++#else
+ 	static Arg argList[] = {
+ 	   {XtNx,		(XtArgVal) 0},
+ 	   {XtNy,		(XtArgVal) 0},
+@@ -237,6 +266,7 @@
+ 	  (Widget)xw, argList, XtNumber(argList));
+         XtAddCallback (scrollWidget, XtNscrollProc, ScrollTextUpDownBy, 0);
+         XtAddCallback (scrollWidget, XtNjumpProc, ScrollTextTo, 0);
++#endif /* MOTIF */
+ 	return (scrollWidget);
+ }
+ 
+@@ -244,6 +274,7 @@
+ void
+ ScrollBarReverseVideo(register Widget scrollWidget)
+ {
++#ifndef MOTIF
+ 	Arg args[4];
+ 	Cardinal nargs = XtNumber(args);
+ 	unsigned long bg, fg, bdr;
+@@ -263,12 +294,17 @@
+ 	    nargs--;				/* don't set border pixel */
+ 	}
+ 	XtSetValues (scrollWidget, args, nargs);
++#endif /* MOTIF */
+ }
+ 
+ 
+ void
+ ScrollBarDrawThumb(register Widget scrollWidget)
+ {
++#ifdef MOTIF
++	Arg args[4];
++	Cardinal nargs = XtNumber(args);
++#endif /* MOTIF */
+ 	register TScreen *screen = &term->screen;
+ 	register int thumbTop, thumbHeight, totalHeight;
+ 
+@@ -276,9 +312,17 @@
+ 	thumbHeight = screen->max_row + 1;
+ 	totalHeight = thumbHeight + screen->savedlines;
+ 
++#ifdef MOTIF
++	XtSetArg(args[0], XmNmaximum, totalHeight); 
++	XtSetArg(args[1], XmNsliderSize, thumbHeight);
++	XtSetArg(args[2], XmNvalue, thumbTop);
++	XtSetArg(args[3], XmNpageIncrement, thumbHeight);
++	XtSetValues(scrollWidget, args, nargs);
++#else
+ 	XawScrollbarSetThumb(scrollWidget,
+ 	 ((float)thumbTop) / totalHeight,
+ 	 ((float)thumbHeight) / totalHeight);
++#endif /* MOTIF */
+ }
+ 
+ void
+@@ -352,6 +396,9 @@
+ void
+ ScrollBarOn (XtermWidget xw, int init, int doalloc)
+ {
++#ifdef MOTIF
++	Cursor arrowCursor;
++#endif /* MOTIF */
+ 	register TScreen *screen = &xw->screen;
+ 	register int i, j, k;
+ 
+@@ -403,6 +450,12 @@
+ 
+ 	ResizeScrollBar (screen);
+ 	XtRealizeWidget (screen->scrollWidget);
++#ifdef MOTIF
++	/* define pointer cursor for it */
++	arrowCursor = XCreateFontCursor(XtDisplay(screen->scrollWidget), XC_left_ptr);
++	XDefineCursor(XtDisplay(screen->scrollWidget), XtWindow(screen->scrollWidget), arrowCursor);
++	XFreeCursor(XtDisplay(screen->scrollWidget), arrowCursor);
++#endif /* MOTIF */
+ 	screen->fullVwin.scrollbar = screen->scrollWidget->core.width +
+ 	     screen->scrollWidget->core.border_width;
+ 
+@@ -467,7 +520,11 @@
+ ScrollTextTo(
+ 	Widget scrollbarWidget GCC_UNUSED,
+ 	XtPointer client_data GCC_UNUSED,
++#ifdef MOTIF
++	XmScrollBarCallbackStruct *call_data)
++#else
+ 	XtPointer call_data)
++#endif /* MOTIF */
+ {
+ 	float *topPercent = (float *) call_data;
+ 	register TScreen *screen = &term->screen;
+@@ -480,7 +537,11 @@
+    screen->topline    : -Number of lines above the last screen->max_row+1 lines
+ */
+ 
++#ifdef MOTIF
++	thumbTop = call_data->value;
++#else
+ 	thumbTop = (int) (*topPercent * (screen->savedlines + screen->max_row+1));
++#endif /* MOTIF */
+ 	newTopLine = thumbTop - screen->savedlines;
+ 	WindowScroll(screen, newTopLine);
+ }
