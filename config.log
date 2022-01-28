@@ -1,0 +1,462 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:600: checking host system type
+configure:651: checking for gcc
+configure:764: checking whether the C compiler (gcc  ) works
+configure:780: gcc -o conftest    conftest.c  1>&5
+configure:806: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:811: checking whether we are using GNU C
+configure:820: gcc -E conftest.c
+configure:839: checking whether gcc accepts -g
+configure:871: checking how to run the C preprocessor
+configure:892: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:952: checking whether gcc needs -traditional
+configure:1009: checking for a BSD compatible install
+configure:1064: checking for AIX
+configure:1088: checking for POSIXized ISC
+configure:1110: checking for minix/config.h
+configure:1120: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1116:26: minix/config.h: No such file or directory
+configure: failed program was:
+#line 1115 "configure"
+#include "confdefs.h"
+#include <minix/config.h>
+configure:1167: checking for stdlib.h
+configure:1177: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1167: checking for termios.h
+configure:1177: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1167: checking for unistd.h
+configure:1177: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1207: checking for size_t in <sys/types.h> or <stdio.h>
+configure:1226: gcc -c -g -O2  conftest.c 1>&5
+configure:1246: checking for ANSI C header files
+configure:1259: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1326: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1350: checking for time_t
+configure:1393: checking for bcopy
+configure:1421: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1393: checking for memmove
+configure:1421: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1393: checking for strerror
+configure:1421: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1393: checking for tcgetattr
+configure:1421: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1393: checking for waitpid
+configure:1421: gcc -o conftest -g -O2   conftest.c  1>&5
+configure:1447: checking for memmove
+configure:1598: checking for full tgetent function
+configure:1627: gcc -o conftest -g -O2   conftest.c  1>&5
+/tmp/cccFeEE4.o(.text+0x10): In function `main':
+/home/inittab/projects/c/mxterm-129/configure:1623: undefined reference to `tgetent'
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 1613 "configure"
+#include "confdefs.h"
+
+/* terminfo implementations ignore the buffer argument, making it useless for
+ * the xterm application, which uses this information to make a new TERMCAP
+ * environment variable.
+ */
+int main()
+{
+	char buffer[1024];
+	buffer[0] = 0;
+	tgetent(buffer, "vt100");
+	exit(buffer[0] == 0); }
+no, there is no termcap/tgetent in 
+configure:1627: gcc -o conftest -g -O2   conftest.c  -ltermcap 1>&5
+configure: failed program was:
+#line 1613 "configure"
+#include "confdefs.h"
+
+/* terminfo implementations ignore the buffer argument, making it useless for
+ * the xterm application, which uses this information to make a new TERMCAP
+ * environment variable.
+ */
+int main()
+{
+	char buffer[1024];
+	buffer[0] = 0;
+	tgetent(buffer, "vt100");
+	exit(buffer[0] == 0); }
+no, there is no termcap/tgetent in termcap
+configure:1627: gcc -o conftest -g -O2   conftest.c  -ltermlib 1>&5
+/usr/bin/ld: cannot find -ltermlib
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 1613 "configure"
+#include "confdefs.h"
+
+/* terminfo implementations ignore the buffer argument, making it useless for
+ * the xterm application, which uses this information to make a new TERMCAP
+ * environment variable.
+ */
+int main()
+{
+	char buffer[1024];
+	buffer[0] = 0;
+	tgetent(buffer, "vt100");
+	exit(buffer[0] == 0); }
+no, there is no termcap/tgetent in termlib
+configure:1627: gcc -o conftest -g -O2   conftest.c  -lncurses 1>&5
+configure: failed program was:
+#line 1613 "configure"
+#include "confdefs.h"
+
+/* terminfo implementations ignore the buffer argument, making it useless for
+ * the xterm application, which uses this information to make a new TERMCAP
+ * environment variable.
+ */
+int main()
+{
+	char buffer[1024];
+	buffer[0] = 0;
+	tgetent(buffer, "vt100");
+	exit(buffer[0] == 0); }
+no, there is no termcap/tgetent in ncurses
+configure:1627: gcc -o conftest -g -O2   conftest.c  -lcurses 1>&5
+configure: failed program was:
+#line 1613 "configure"
+#include "confdefs.h"
+
+/* terminfo implementations ignore the buffer argument, making it useless for
+ * the xterm application, which uses this information to make a new TERMCAP
+ * environment variable.
+ */
+int main()
+{
+	char buffer[1024];
+	buffer[0] = 0;
+	tgetent(buffer, "vt100");
+	exit(buffer[0] == 0); }
+no, there is no termcap/tgetent in curses
+configure:1692: checking for partial tgetent function
+configure:1708: gcc -o conftest -g -O2   conftest.c  -ltermcap 1>&5
+there is a terminfo/tgetent in termcap
+configure:1731: checking for termcap.h
+configure:1741: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1782: checking for lastlog.h
+configure:1792: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1782: checking for paths.h
+configure:1792: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1819: checking for lastlog path
+configure:1840: gcc -c -g -O2  conftest.c 1>&5
+configure:1867: checking for utmp implementation
+configure:1891: gcc -c -g -O2  conftest.c 1>&5
+In file included from /usr/include/lastlog.h:4,
+                 from configure:1881:
+/usr/include/utmp.h:63: error: conflicting types for `getutxent'
+/usr/include/utmpx.h:66: error: previous declaration of `getutxent'
+configure: failed program was:
+#line 1875 "configure"
+#include "confdefs.h"
+
+#include <sys/types.h>
+#include <utmpx.h>
+#define getutent getutxent
+#ifdef USE_LASTLOG
+#include <lastlog.h>	/* may conflict with utmpx.h on Linux */
+#endif
+
+int main() {
+struct utmpx x;
+	 char *name = x.ut_name; /* utmp.h and compatible definitions */
+	
+; return 0; }
+configure:1917: gcc -c -g -O2  conftest.c 1>&5
+In file included from /usr/include/lastlog.h:4,
+                 from configure:1907:
+/usr/include/utmp.h:63: error: conflicting types for `getutxent'
+/usr/include/utmpx.h:66: error: previous declaration of `getutxent'
+configure: failed program was:
+#line 1901 "configure"
+#include "confdefs.h"
+
+#include <sys/types.h>
+#include <utmpx.h>
+#define getutent getutxent
+#ifdef USE_LASTLOG
+#include <lastlog.h>	/* may conflict with utmpx.h on Linux */
+#endif
+
+int main() {
+struct utmpx x;
+	 char *name = x.ut_user; /* utmpx.h must declare this */
+	
+; return 0; }
+configure:1891: gcc -c -g -O2  conftest.c 1>&5
+configure:1952: checking if utmp.ut_host is declared
+configure:1967: gcc -c -g -O2  conftest.c 1>&5
+configure:1991: checking for exit-status in utmp
+configure:2012: gcc -c -g -O2  conftest.c 1>&5
+configure: In function `main':
+configure:2008: error: structure has no member named `__e_exit'
+configure: failed program was:
+#line 2003 "configure"
+#include "confdefs.h"
+
+#include <sys/types.h>
+#include <utmp.h>
+int main() {
+struct utmp x; long y = x.ut_exit.__e_exit = 0
+; return 0; }
+configure:2012: gcc -c -g -O2  conftest.c 1>&5
+configure:2044: checking if utmp.ut_xtime is declared
+configure:2059: gcc -c -g -O2  conftest.c 1>&5
+configure:2111: checking if utmp.ut_session is declared
+configure:2126: gcc -c -g -O2  conftest.c 1>&5
+configure:2151: checking if utmp is SYSV flavor
+configure:2172: gcc -o conftest -g -O2   conftest.c  -ltermcap 1>&5
+configure:2195: checking if you want to link with utempter
+configure:2260: checking if POSIX VDISABLE symbol should be used
+configure:2310: gcc -o conftest -g -O2   conftest.c  -ltermcap 1>&5
+configure:2336: checking if external errno is declared
+configure:2355: gcc -c -g -O2  conftest.c 1>&5
+configure:2386: checking if external errno exists
+configure:2402: gcc -o conftest -g -O2   conftest.c  -ltermcap 1>&5
+configure:2434: checking for tty group
+configure:2457: gcc -o conftest -g -O2   conftest.c  -ltermcap 1>&5
+configure:2482: checking for gcc option to accept ANSI C
+configure:2522: gcc -c -g -O2 -DCC_HAS_PROTOS  conftest.c 1>&5
+configure:2549: checking for working const
+configure:2603: gcc -c -g -O2  conftest.c 1>&5
+configure:2627: checking for sys/wait.h that is POSIX.1 compatible
+configure:2648: gcc -c -g -O2  conftest.c 1>&5
+configure:2671: checking if we must define _GNU_SOURCE
+configure:2687: gcc -c -g -O2  conftest.c 1>&5
+configure: In function `main':
+configure:2682: error: `make' undeclared (first use in this function)
+configure:2682: error: (Each undeclared identifier is reported only once
+configure:2682: error: for each function it appears in.)
+configure:2682: error: syntax error before "an"
+configure: failed program was:
+#line 2677 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+int main() {
+
+#ifndef _XOPEN_SOURCE
+make an error
+#endif
+; return 0; }
+configure:2707: gcc -c -g -O2 -D_GNU_SOURCE  conftest.c 1>&5
+configure: In function `main':
+configure:2702: error: `make' undeclared (first use in this function)
+configure:2702: error: (Each undeclared identifier is reported only once
+configure:2702: error: for each function it appears in.)
+configure:2702: error: syntax error before "an"
+configure: failed program was:
+#line 2697 "configure"
+#include "confdefs.h"
+#include <sys/types.h>
+int main() {
+
+#ifdef _XOPEN_SOURCE
+make an error
+#endif
+; return 0; }
+configure:2732: checking for X
+configure:3180: checking for socket in -lsocket
+configure:3199: gcc -o conftest -g -O2 -D_GNU_SOURCE   conftest.c -lsocket   -ltermcap 1>&5
+/usr/bin/ld: cannot find -lsocket
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 3188 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char socket();
+
+int main() {
+socket()
+; return 0; }
+configure:3227: checking for gethostname in -lnsl
+configure:3246: gcc -o conftest -g -O2 -D_GNU_SOURCE   conftest.c -lnsl   -ltermcap 1>&5
+configure:3362: checking for dnet_ntoa in -ldnet
+configure:3381: gcc -o conftest -g -O2 -D_GNU_SOURCE   conftest.c -ldnet  -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -ldnet
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 3370 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char dnet_ntoa();
+
+int main() {
+dnet_ntoa()
+; return 0; }
+configure:3403: checking for dnet_ntoa in -ldnet_stub
+configure:3422: gcc -o conftest -g -O2 -D_GNU_SOURCE   conftest.c -ldnet_stub  -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -ldnet_stub
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 3411 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char dnet_ntoa();
+
+int main() {
+dnet_ntoa()
+; return 0; }
+configure:3451: checking for gethostbyname
+configure:3479: gcc -o conftest -g -O2 -D_GNU_SOURCE   conftest.c -lnsl  -ltermcap 1>&5
+configure:3549: checking for connect
+configure:3577: gcc -o conftest -g -O2 -D_GNU_SOURCE   conftest.c -lnsl  -ltermcap 1>&5
+configure:3641: checking for remove
+configure:3669: gcc -o conftest -g -O2 -D_GNU_SOURCE   conftest.c -lnsl  -ltermcap 1>&5
+configure:3733: checking for shmat
+configure:3761: gcc -o conftest -g -O2 -D_GNU_SOURCE   conftest.c -lnsl  -ltermcap 1>&5
+configure:3834: checking for IceConnectionNumber in -lICE
+configure:3853: gcc -o conftest -g -O2 -D_GNU_SOURCE   -L/usr/X11R6/lib conftest.c -lICE  -lnsl  -ltermcap 1>&5
+configure:3880: checking for XOpenDisplay in -lX11
+configure:3899: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -lX11  -lSM -lICE -lnsl  -ltermcap  -lnsl  -ltermcap 1>&5
+configure:3920: checking for XtAppInitialize in -lXt
+configure:3939: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap  -lX11 -lnsl  -ltermcap 1>&5
+configure:3995: checking for X11/DECkeysym.h
+configure:4005: gcc -E -I/usr/X11R6/include  conftest.c >/dev/null 2>conftest.out
+configure:3995: checking for X11/Xpoll.h
+configure:4005: gcc -E -I/usr/X11R6/include  conftest.c >/dev/null 2>conftest.out
+configure:4053: checking for XextCreateExtension in -lXext
+configure:4072: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -lXext  -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+configure:4111: checking for X11/Xaw/SimpleMenu.h
+configure:4123: gcc -c -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include  conftest.c 1>&5
+configure:4117:32: X11/Xaw/SimpleMenu.h: No such file or directory
+configure: failed program was:
+#line 4114 "configure"
+#include "confdefs.h"
+
+#include <X11/Intrinsic.h>
+#include <X11/Xaw/SimpleMenu.h>
+int main() {
+
+; return 0; }
+configure:4153: checking for XawSimpleMenuAddGlobalActions in -lXaw -lXmu -lXpm
+configure:4163: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -lXaw -lXmu -lXpm -lXext -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -lXaw
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 4156 "configure"
+#include "confdefs.h"
+
+int main() {
+XawSimpleMenuAddGlobalActions()
+; return 0; }
+configure:4153: checking for XawSimpleMenuAddGlobalActions in -lXaw_s -lXmu_s
+configure:4163: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -lXaw_s -lXmu_s -lXext -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -lXaw_s
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 4156 "configure"
+#include "confdefs.h"
+
+int main() {
+XawSimpleMenuAddGlobalActions()
+; return 0; }
+configure:4108: checking for X11/Xaw/SimpleMenu.h in /usr/contrib/X11R6
+configure:4123: gcc -c -I/usr/contrib/X11R6/include -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include  conftest.c 1>&5
+configure:4117:32: X11/Xaw/SimpleMenu.h: No such file or directory
+configure: failed program was:
+#line 4114 "configure"
+#include "confdefs.h"
+
+#include <X11/Intrinsic.h>
+#include <X11/Xaw/SimpleMenu.h>
+int main() {
+
+; return 0; }
+configure:4149: checking for -lXaw -lXmu -lXpm in /usr/contrib/X11R6
+configure:4163: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -L/usr/contrib/X11R6/lib -lXaw -lXmu -lXpm -lXext -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -lXaw
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 4156 "configure"
+#include "confdefs.h"
+
+int main() {
+XawSimpleMenuAddGlobalActions()
+; return 0; }
+configure:4149: checking for -lXaw_s -lXmu_s in /usr/contrib/X11R6
+configure:4163: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -L/usr/contrib/X11R6/lib -lXaw_s -lXmu_s -lXext -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -lXaw_s
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 4156 "configure"
+#include "confdefs.h"
+
+int main() {
+XawSimpleMenuAddGlobalActions()
+; return 0; }
+configure:4108: checking for X11/Xaw/SimpleMenu.h in /usr/contrib/X11R5
+configure:4123: gcc -c -I/usr/contrib/X11R5/include -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include  conftest.c 1>&5
+configure:4117:32: X11/Xaw/SimpleMenu.h: No such file or directory
+configure: failed program was:
+#line 4114 "configure"
+#include "confdefs.h"
+
+#include <X11/Intrinsic.h>
+#include <X11/Xaw/SimpleMenu.h>
+int main() {
+
+; return 0; }
+configure:4149: checking for -lXaw -lXmu -lXpm in /usr/contrib/X11R5
+configure:4163: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -L/usr/contrib/X11R5/lib -lXaw -lXmu -lXpm -lXext -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -lXaw
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 4156 "configure"
+#include "confdefs.h"
+
+int main() {
+XawSimpleMenuAddGlobalActions()
+; return 0; }
+configure:4149: checking for -lXaw_s -lXmu_s in /usr/contrib/X11R5
+configure:4163: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -L/usr/contrib/X11R5/lib -lXaw_s -lXmu_s -lXext -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -lXaw_s
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 4156 "configure"
+#include "confdefs.h"
+
+int main() {
+XawSimpleMenuAddGlobalActions()
+; return 0; }
+configure:4108: checking for X11/Xaw/SimpleMenu.h in /usr/lib/X11R5
+configure:4123: gcc -c -I/usr/lib/X11R5/include -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include  conftest.c 1>&5
+configure:4117:32: X11/Xaw/SimpleMenu.h: No such file or directory
+configure: failed program was:
+#line 4114 "configure"
+#include "confdefs.h"
+
+#include <X11/Intrinsic.h>
+#include <X11/Xaw/SimpleMenu.h>
+int main() {
+
+; return 0; }
+configure:4149: checking for -lXaw -lXmu -lXpm in /usr/lib/X11R5
+configure:4163: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -L/usr/lib/X11R5/lib -lXaw -lXmu -lXpm -lXext -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -lXaw
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 4156 "configure"
+#include "confdefs.h"
+
+int main() {
+XawSimpleMenuAddGlobalActions()
+; return 0; }
+configure:4149: checking for -lXaw_s -lXmu_s in /usr/lib/X11R5
+configure:4163: gcc -o conftest -g -O2 -D_GNU_SOURCE  -I/usr/X11R6/include -I/usr/X11R6/include    -L/usr/X11R6/lib conftest.c -L/usr/lib/X11R5/lib -lXaw_s -lXmu_s -lXext -lXt  -lSM -lICE -lX11 -lnsl  -ltermcap 1>&5
+/usr/bin/ld: cannot find -lXaw_s
+collect2: ld returned 1 exit status
+configure: failed program was:
+#line 4156 "configure"
+#include "confdefs.h"
+
+int main() {
+XawSimpleMenuAddGlobalActions()
+; return 0; }
